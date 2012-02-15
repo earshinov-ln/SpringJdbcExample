@@ -73,11 +73,11 @@ public class EmployeeDao {
 	 * 
 	 * @return Найденная запись или @c null, если записи с указанным идентификатором нет.
 	 */
-	public Employee findByEmpno(int empno) {
+	public Employee findByEmpno(int empno) throws EmployeeDaoException {
 		try {
 			return new JdbcTemplate(dataSource).queryForObject(findByEmpnoSql, new EmployeeMapper(), empno);
 		} catch (EmptyResultDataAccessException e) {
-			return null;
+			throw new EmployeeDaoException("Employee with employee number " + empno + " not found", e);
 		}
 	}
 	

@@ -30,31 +30,35 @@ public class EmployeeDaoTest {
     
  
     @Test
-    public void test_create_and_read() {
+    public void test_create_and_read() throws Exception {
         Employee insertedEmployee = getTestEmployee();
         employeeDao.insert( insertedEmployee );
         Employee returnedEmployee = employeeDao.findByEmpno( insertedEmployee.getEmpno() );
         Assert.assertEquals(insertedEmployee, returnedEmployee);
     }
     
-    @Test
-    public void test_delete() {
-        
-        Employee e1 = getTestEmployee(FIRST_SAMPLE_EMPNO);
-        employeeDao.insert(e1);
-        
-        Employee e2 = getTestEmployee(SECOND_SAMPLE_EMPNO);
-        employeeDao.insert(e2);
-        
-        employeeDao.deleteByEmpno( e1.getEmpno() );
-        Assert.assertNull(employeeDao.findByEmpno(e1.getEmpno()));
-        
-        // запись Employee2 не должна никуда деться
-        Assert.assertEquals(e2, employeeDao.findByEmpno(e2.getEmpno()));
+    @Test(expected=EmployeeDaoException.class)
+    public void test_delete() throws Exception {
+        Employee e = getTestEmployee();
+        employeeDao.insert(e);
+        employeeDao.deleteByEmpno(e.getEmpno());
+        employeeDao.findByEmpno(e.getEmpno());
     }
     
     @Test
-    public void test_update() {
+    public void test_delete_does_not_delete_other_employees() throws Exception {
+        Employee existingEmployee = getTestEmployee(FIRST_SAMPLE_EMPNO);
+        employeeDao.insert(existingEmployee);
+        
+        Employee employeeToBeDeleted = getTestEmployee(SECOND_SAMPLE_EMPNO);
+        employeeDao.insert(employeeToBeDeleted);
+        employeeDao.deleteByEmpno( employeeToBeDeleted.getEmpno() );
+        
+        Assert.assertEquals(existingEmployee, employeeDao.findByEmpno(existingEmployee.getEmpno()));
+    }
+    
+    @Test
+    public void test_update() throws Exception {
         Employee insertedEmployee = getTestEmployee();
         employeeDao.insert(insertedEmployee);
         
