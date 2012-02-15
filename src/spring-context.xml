@@ -14,30 +14,30 @@
         
         <!-- SQL-запросы  -->
         <property name="insertSql">
-        	<value><![CDATA[
-        		INSERT INTO Employee (empno, ename, job_title)
-				VALUES (?, ?, ?)
-        	]]></value>
+            <value><![CDATA[
+                INSERT INTO Employee (empno, ename, job_title)
+                VALUES (:empno, :name, :jobTitle)
+            ]]></value>
         </property>
         <property name="updateSql">
-        	<value><![CDATA[
-        		UPDATE Employee 
-				SET ename = ?, job_title = ?
-				WHERE empno = ?
-        	]]></value>
+            <value><![CDATA[
+                UPDATE Employee 
+                SET ename = :name, job_title = :jobTitle
+                WHERE empno = :empno
+            ]]></value>
         </property>
         <property name="findByEmpnoSql">
-        	<value><![CDATA[
-        		SELECT *
-				FROM Employee
-				WHERE empno = ?
-        	]]></value>
+            <value><![CDATA[
+                SELECT *
+                FROM Employee
+                WHERE empno = :empno
+            ]]></value>
         </property>
         <property name="deleteByEmpnoSql">
-        	<value><![CDATA[
-        		DELETE FROM Employee
-				WHERE empno = ?
-        	]]></value>
+            <value><![CDATA[
+                DELETE FROM Employee
+                WHERE empno = :empno
+            ]]></value>
         </property>
     </bean>
     
@@ -47,8 +47,8 @@
     </bean>
     
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-	     <property name="dataSource" ref="dataSource"/>
-	</bean>
+         <property name="dataSource" ref="dataSource"/>
+    </bean>
 
     <context:property-placeholder location="jdbc.properties"/>
 

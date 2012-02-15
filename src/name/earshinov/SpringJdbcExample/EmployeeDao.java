@@ -3,7 +3,9 @@ package name.earshinov.SpringJdbcExample;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
@@ -60,12 +62,24 @@ public class EmployeeDao {
 
 	/** Добавить в базу указанную запись */
 	public void insert(Employee e) {
-		new JdbcTemplate(dataSource).update(insertSql, e.getEmpno(), e.getName(), e.getJobTitle());
+		NamedParameterJdbcTemplate jdbc = new NamedParameterJdbcTemplate(dataSource);
+		
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("empno", e.getEmpno());
+		params.put("name", e.getName());
+		params.put("jobTitle", e.getJobTitle());
+		jdbc.update(insertSql, params);
 	}
 	
 	/** Обновить в базе запись */
 	public void update(Employee e) {
-		new JdbcTemplate(dataSource).update(updateSql, e.getName(), e.getJobTitle(), e.getEmpno());
+		NamedParameterJdbcTemplate jdbc = new NamedParameterJdbcTemplate(dataSource);
+		
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("empno", e.getEmpno());
+		params.put("name", e.getName());
+		params.put("jobTitle", e.getJobTitle());
+		jdbc.update(updateSql, params);
 	}
 	
 	/**
@@ -74,8 +88,11 @@ public class EmployeeDao {
 	 * @return Найденная запись или @c null, если записи с указанным идентификатором нет.
 	 */
 	public Employee findByEmpno(int empno) throws EmployeeDaoException {
+		NamedParameterJdbcTemplate jdbc = new NamedParameterJdbcTemplate(dataSource);
 		try {
-			return new JdbcTemplate(dataSource).queryForObject(findByEmpnoSql, new EmployeeMapper(), empno);
+			return jdbc.queryForObject(findByEmpnoSql,
+					Collections.singletonMap("empno", empno),
+					new EmployeeMapper());
 		} catch (EmptyResultDataAccessException e) {
 			throw new EmployeeDaoException("Employee with employee number " + empno + " not found", e);
 		}
@@ -83,7 +100,8 @@ public class EmployeeDao {
 	
 	/** Удалить из базы запись с указанным идентификатором */
 	public void deleteByEmpno(int empno) {
-		new JdbcTemplate(dataSource).update(deleteByEmpnoSql, empno);
+		NamedParameterJdbcTemplate jdbc = new NamedParameterJdbcTemplate(dataSource);
+		jdbc.update(deleteByEmpnoSql, Collections.singletonMap("empno", empno));
 	}
 	
 	
