@@ -14,8 +14,7 @@ public interface EmployeeDao {
 
 	/**
 	 * Получить из базы запись с указанным идентификатором.
-	 * 
-	 * @return Найденная запись или @c null, если записи с указанным идентификатором нет.
+	 * @throws EmployeeDaoException - запись с указанным идентификатором не найдена
 	 */
 	public abstract Employee findByEmpno(int empno) throws EmployeeDaoException;
 
