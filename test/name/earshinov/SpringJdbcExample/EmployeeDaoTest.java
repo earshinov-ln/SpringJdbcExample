@@ -153,6 +153,20 @@ public class EmployeeDaoTest {
     }
     
     @Test
+    public void test_criteria_search_works_with_several_parameters() throws Exception {
+    	Employee e = new Employee(1, "John Smith", SAMPLE_JOB, SAMPLE_HIRE_DATE);
+    	employeeDao.insert(e);
+    	
+    	EmployeeSearchCriteria criteria = new EmployeeSearchCriteria();
+    	criteria.setNamePattern("*hn?Sm*");
+    	criteria.setHireDateFromInclusive(SAMPLE_HIRE_DATE);
+    	criteria.setHireDateToInclusive(SAMPLE_HIRE_DATE);
+		List<Employee> found = employeeDao.findByCriteria(criteria );
+		
+		Assert.assertTrue(found.contains(e));
+    }
+    
+    @Test
     public void test_criteria_search_handles_special_chars_in_pattern() throws Exception {
     	Employee e1 = new Employee(1, "%_#", SAMPLE_JOB, null);
     	employeeDao.insert(e1);
