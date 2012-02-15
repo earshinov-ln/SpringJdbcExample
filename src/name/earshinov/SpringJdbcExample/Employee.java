@@ -2,15 +2,19 @@ package name.earshinov.SpringJdbcExample;
 
 public class Employee {
 
-	private int empno;
+	private final int empno;
 	private String name;
 	private String jobTitle;
 	
 	
-	public Employee() { }
+	// Из-за отсутствия конструктора без аргументов этот класс не может являться JavaBean'ом.
+	// Зато можем сделать поле идентификатора неизменным.
+	public Employee(int empno) {
+		this.empno = empno;
+	}
 	
 	public Employee(int empno, String name, String jobTitle) {
-		this.empno = empno;
+		this(empno);
 		this.name = name;
 		this.jobTitle = jobTitle;
 	}
@@ -18,9 +22,6 @@ public class Employee {
 	
 	public int getEmpno() {
 		return empno;
-	}
-	public void setEmpno(int empno) {
-		this.empno = empno;
 	}
 	
 	public String getName() {
