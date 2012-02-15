@@ -82,11 +82,14 @@ public class Employee {
 	 * Из переданного экземпляра Date берётся только дата.
 	 */
 	public void setHireDate(Date hireDate) {
-		this.hireDate = getDateWithoutTime(hireDate);
+		this.hireDate = hireDate == null ? null : getDateWithoutTime(hireDate);
 	}
 	
 	/** Получить копию переданного экземпляра Date с временем, установленным в 00:00 по UTC */
 	private Date getDateWithoutTime(Date date) {
+		if (date == null)
+			throw new IllegalArgumentException();
+		
 		// <http://stackoverflow.com/questions/5050170/java-getting-date-without-time>
 		Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
 		cal.setTime(date);
