@@ -1,0 +1,15 @@
+create table Employee (
+  EMPNO int not null primary key,
+  ENAME varchar (50) not null,
+  JOB_TITLE varchar (150) not null,
+  HIRE_DATE date );
+
+insert into Employee values
+  (7369, 'John Smith', 'Clerk'),
+  (7499, 'Joe  Allen', 'Salesman'),
+  (7521, 'Mary Lou', 'Director');
+
+alter table Employee
+  add column DUPLICATE_EMPNO int
+  references Employee
+  on delete set null;
