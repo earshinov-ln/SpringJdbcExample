@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations="/spring-context.xml")
 @Transactional
-public class EmployeeDaoTests {
+public class EmployeeDaoTest {
  
     @Autowired
     private EmployeeDao employeeDao;
