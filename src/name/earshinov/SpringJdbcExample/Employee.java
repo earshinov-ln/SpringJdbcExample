@@ -87,6 +87,7 @@ public class Employee {
 	
 	/** Получить копию переданного экземпляра Date с временем, установленным в 00:00 по UTC */
 	private Date getDateWithoutTime(Date date) {
+		// <http://stackoverflow.com/questions/5050170/java-getting-date-without-time>
 		Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
 		cal.setTime(date);
 		int year = cal.get(Calendar.YEAR);
