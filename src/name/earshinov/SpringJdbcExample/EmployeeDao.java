@@ -19,6 +19,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 public class EmployeeDao {
 
+	// Dependency injection
+	
 	private DataSource dataSource;
 	private TransactionTemplate transactionTemplate;
 	
@@ -30,37 +32,49 @@ public class EmployeeDao {
 		this.transactionTemplate = new TransactionTemplate( transactionManager );
 	}
 	
+	// SQL-запросы
+	
+	private static String insertSql;
+	public static void setInsertSql(String insertSql) {
+		EmployeeDao.insertSql = insertSql;
+	}
+	
+	private static String updateSql;
+	public static void setUpdateSql(String updateSql) {
+		EmployeeDao.updateSql = updateSql;
+	}
+	
+	private static String findByEmpnoSql;
+	public static void setFindByEmpnoSql(String findByEmpnoSql) {
+		EmployeeDao.findByEmpnoSql = findByEmpnoSql;
+	}
+	
+	private static String deleteByEmpnoSql;
+	public static void setDeleteByEmpnoSql(String deleteByEmpnoSql) {
+		EmployeeDao.deleteByEmpnoSql = deleteByEmpnoSql;
+	}
+	
 	
 	// CRUD operations
 
 	/** Добавить в базу указанную запись */
 	public void insert(Employee e) {
-		String sql =
-			"INSERT INTO Employee (empno, ename, job_title)" +
-			"VALUES (?, ?, ?)";
-		new JdbcTemplate(dataSource).update(sql, e.getEmpno(), e.getName(), e.getJobTitle());
+		new JdbcTemplate(dataSource).update(insertSql, e.getEmpno(), e.getName(), e.getJobTitle());
 	}
 	
 	/** Обновить в базе запись */
 	public void update(Employee e) {
-		String sql =
-			"UPDATE Employee " +
-			"SET ename = ?, job_title = ? " +
-			"WHERE empno = ?";
-		new JdbcTemplate(dataSource).update(sql, e.getName(), e.getJobTitle(), e.getEmpno());
+		new JdbcTemplate(dataSource).update(updateSql, e.getName(), e.getJobTitle(), e.getEmpno());
 	}
-
-	/** Получить из базы запись с указанным идентификатором.
+	
+	/**
+	 * Получить из базы запись с указанным идентификатором.
 	 * 
 	 * @return Найденная запись или @c null, если записи с указанным идентификатором нет.
 	 */
 	public Employee findByEmpno(int empno) {
 		try {
-			String sql =
-				"SELECT * " +
-				"FROM Employee " +
-				"WHERE empno = ?";
-			return new JdbcTemplate(dataSource).queryForObject(sql, new RowMapper<Employee>(){
+			return new JdbcTemplate(dataSource).queryForObject(findByEmpnoSql, new RowMapper<Employee>(){
 				public Employee mapRow( ResultSet rs, int i ) throws SQLException {
 					return new Employee(
 							rs.getInt("empno"),
@@ -72,13 +86,10 @@ public class EmployeeDao {
 			return null;
 		}
 	}
-
+	
 	/** Удалить из базы запись с указанным идентификатором */
 	public void deleteByEmpno(int empno) {
-		String sql =
-			"DELETE FROM Employee " +
-			"WHERE empno = ?";
-		new JdbcTemplate(dataSource).update(sql, empno);
+		new JdbcTemplate(dataSource).update(deleteByEmpnoSql, empno);
 	}
 	
 	

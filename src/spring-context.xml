@@ -11,6 +11,34 @@
     <bean id="employeeDao" class="name.earshinov.SpringJdbcExample.EmployeeDao">
         <property name="dataSource" ref="dataSource"/>
         <property name="transactionManager" ref="transactionManager"/>
+        
+        <!-- SQL-запросы  -->
+        <property name="insertSql">
+        	<value><![CDATA[
+        		INSERT INTO Employee (empno, ename, job_title)
+				VALUES (?, ?, ?)
+        	]]></value>
+        </property>
+        <property name="updateSql">
+        	<value><![CDATA[
+        		UPDATE Employee 
+				SET ename = ?, job_title = ?
+				WHERE empno = ?
+        	]]></value>
+        </property>
+        <property name="findByEmpnoSql">
+        	<value><![CDATA[
+        		SELECT *
+				FROM Employee
+				WHERE empno = ?
+        	]]></value>
+        </property>
+        <property name="deleteByEmpnoSql">
+        	<value><![CDATA[
+        		DELETE FROM Employee
+				WHERE empno = ?
+        	]]></value>
+        </property>
     </bean>
     
     <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
