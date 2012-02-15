@@ -6,6 +6,16 @@ public class Employee {
 	private String name;
 	private String jobTitle;
 	
+	
+	public Employee() { }
+	
+	public Employee(int empno, String name, String jobTitle) {
+		this.empno = empno;
+		this.name = name;
+		this.jobTitle = jobTitle;
+	}
+	
+	
 	public int getEmpno() {
 		return empno;
 	}

@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
@@ -32,29 +33,56 @@ public class EmployeeDao {
 	
 	// CRUD operations
 
+	/** Добавить в базу указанную запись */
 	public void insert(Employee e) {
 		String sql =
 			"INSERT INTO Employee (empno, ename, job_title)" +
 			"VALUES (?, ?, ?)";
 		new JdbcTemplate(dataSource).update(sql, e.getEmpno(), e.getName(), e.getJobTitle());
 	}
-
-	public Employee findByEmpno(int empno) {
+	
+	/** Обновить в базе запись */
+	public void update(Employee e) {
 		String sql =
-			"SELECT * " +
-			"FROM Employee " +
+			"UPDATE Employee " +
+			"SET ename = ?, job_title = ? " +
 			"WHERE empno = ?";
-		return new JdbcTemplate(dataSource).queryForObject(sql, new RowMapper<Employee>(){
-			public Employee mapRow( ResultSet rs, int i ) throws SQLException {
-				Employee ret = new Employee();
-				ret.setEmpno(rs.getInt("empno"));
-				ret.setName(rs.getString("ename"));
-				ret.setJobTitle(rs.getString("job_title"));
-				return ret;
-			}
-		}, empno);
+		new JdbcTemplate(dataSource).update(sql, e.getName(), e.getJobTitle(), e.getEmpno());
+	}
+
+	/** Получить из базы запись с указанным идентификатором.
+	 * 
+	 * @return Найденная запись или @c null, если записи с указанным идентификатором нет.
+	 */
+	public Employee findByEmpno(int empno) {
+		try {
+			String sql =
+				"SELECT * " +
+				"FROM Employee " +
+				"WHERE empno = ?";
+			return new JdbcTemplate(dataSource).queryForObject(sql, new RowMapper<Employee>(){
+				public Employee mapRow( ResultSet rs, int i ) throws SQLException {
+					return new Employee(
+							rs.getInt("empno"),
+							rs.getString("ename"),
+							rs.getString("job_title"));
+				}
+			}, empno);
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
+	}
+
+	/** Удалить из базы запись с указанным идентификатором */
+	public void deleteByEmpno(int empno) {
+		String sql =
+			"DELETE FROM Employee " +
+			"WHERE empno = ?";
+		new JdbcTemplate(dataSource).update(sql, empno);
 	}
 	
+	
+	// операции, реализованные по аналогии с проектом DbExample
 	
 	public void handleAll( RowCallbackHandler callback ) {
 		new JdbcTemplate(dataSource).query("SELECT * FROM Employee", callback );
