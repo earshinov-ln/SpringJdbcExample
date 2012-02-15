@@ -125,10 +125,11 @@ public class EmployeeDaoBean implements EmployeeDao {
 		final String ename = e.getName();
 		final String jobTitle = e.getJobTitle();
 		
-		// <http://stackoverflow.com/questions/1023907/easy-transactions-using-spring-jdbc>
+		// Рецепт подсмотрен по ссылке <http://stackoverflow.com/questions/1023907/easy-transactions-using-spring-jdbc>.
+		// Альтернатива - использовать аннотацию @Transactional или что-то типа того
 		transactionTemplate.execute(new TransactionCallbackWithoutResult(){
+			
 			protected void doInTransactionWithoutResult(TransactionStatus tran) {
-				
 				JdbcTemplate jdbc = new JdbcTemplate(dataSource);
 				
 				String sql =
