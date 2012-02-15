@@ -119,6 +119,14 @@ public class EmployeeDaoBean implements EmployeeDao {
 			params.put("ename", getSqlStringPatternFromHumanStringPattern(namePattern));
 		}
 		
+		if (criteria.hireDateFromInclusive != null)
+			sql += " AND hire_date >= :hireDateFrom";
+		params.put("hireDateFrom", criteria.hireDateFromInclusive);
+		
+		if (criteria.hireDateToInclusive != null)
+			sql += " AND hire_date <= :hireDateTo";
+		params.put("hireDateTo", criteria.hireDateToInclusive);
+		
 		return jdbc.query(sql, params, new EmployeeMapper());
 	}
 	

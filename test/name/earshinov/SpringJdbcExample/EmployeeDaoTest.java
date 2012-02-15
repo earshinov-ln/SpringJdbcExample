@@ -90,38 +90,66 @@ public class EmployeeDaoTest {
     
     // тестирование поиска по критериям
     
-    @Test
-    public void test_criteria_search_matches_everything_by_default() throws Exception {
-    	Employee e1 = new Employee(1, "John Smith", "Accountant", getDate(2011, 11, 2));
-    	Employee e2 = new Employee(2, "John Doe", "Chief accountant", getDate(2005, 2, 2));
-    	Employee e3 = new Employee(3, "Alice Schwarzer", "Technical director", getDate(2007, 6, 2));
-    	employeeDao.insert(e1);
-    	employeeDao.insert(e2);
-    	employeeDao.insert(e3);
-    	
-    	EmployeeSearchCriteria criteria = new EmployeeSearchCriteria();
-    	List<Employee> employees = employeeDao.findByCriteria(criteria);
-    	Assert.assertTrue(employees.contains(e1));
-    	Assert.assertTrue(employees.contains(e2));
-    	Assert.assertTrue(employees.contains(e3));
+    private Employee[] prepareEmployeesForCriteriaSearch() {
+    	Employee[] employees = new Employee[] {
+			new Employee(1, "John Smith", "Accountant", getDate(2011, 11, 2)),
+	    	new Employee(2, "John Doe", "Chief accountant", getDate(2005, 2, 2)),
+	    	new Employee(3, "Alice Schwarzer", "Technical director", getDate(2007, 6, 2)),	
+    	};
+    	for (Employee e : employees)
+    		employeeDao.insert(e);
+    	return employees;
     }
     
     @Test
-    public void test_criteria_search_correctly_matches_by_name() throws Exception {
-    	Employee e1 = new Employee(1, "John Smith", "Accountant", getDate(2011, 11, 2));
-    	Employee e2 = new Employee(2, "John Doe", "Chief accountant", getDate(2005, 2, 2));
-    	Employee e3 = new Employee(3, "Alice Schwarzer", "Technical director", getDate(2007, 6, 2));
-    	employeeDao.insert(e1);
-    	employeeDao.insert(e2);
-    	employeeDao.insert(e3);
+    public void test_criteria_search_matches_everything_by_default() throws Exception {
+    	Employee[] inserted = prepareEmployeesForCriteriaSearch();
+    	
+    	EmployeeSearchCriteria criteria = new EmployeeSearchCriteria();
+    	List<Employee> found = employeeDao.findByCriteria(criteria);
+    	
+    	Assert.assertTrue(found.contains(inserted[0]));
+    	Assert.assertTrue(found.contains(inserted[1]));
+    	Assert.assertTrue(found.contains(inserted[2]));
+    }
+    
+    @Test
+    public void test_criteria_search_matches_by_name() throws Exception {
+    	Employee[] inserted = prepareEmployeesForCriteriaSearch();
     	
     	EmployeeSearchCriteria criteria = new EmployeeSearchCriteria();
     	criteria.setNamePattern("John*");
-    	List<Employee> employees = employeeDao.findByCriteria(criteria);
+    	List<Employee> found = employeeDao.findByCriteria(criteria);
     	
-    	Assert.assertTrue(employees.contains(e1));
-    	Assert.assertTrue(employees.contains(e2));
-    	Assert.assertFalse(employees.contains(e3));
+    	Assert.assertTrue(found.contains(inserted[0]));
+    	Assert.assertTrue(found.contains(inserted[1]));
+    	Assert.assertFalse(found.contains(inserted[2]));
+    }
+    
+    @Test
+    public void test_criteria_search_matches_by_hire_date_from() throws Exception {
+    	Employee[] inserted = prepareEmployeesForCriteriaSearch();
+    	
+    	EmployeeSearchCriteria criteria = new EmployeeSearchCriteria();
+    	criteria.setHireDateFromInclusive(getDate(2007, 6, 2));
+    	List<Employee> found = employeeDao.findByCriteria(criteria);
+    	
+    	Assert.assertTrue(found.contains(inserted[0]));
+    	Assert.assertFalse(found.contains(inserted[1]));
+    	Assert.assertTrue(found.contains(inserted[2]));
+    }
+    
+    @Test
+    public void test_criteria_search_matches_by_hire_date_to() throws Exception {
+    	Employee[] inserted = prepareEmployeesForCriteriaSearch();
+    	
+    	EmployeeSearchCriteria criteria = new EmployeeSearchCriteria();
+    	criteria.setHireDateToInclusive(getDate(2007, 6, 2));
+    	List<Employee> found = employeeDao.findByCriteria(criteria);
+    	
+    	Assert.assertFalse(found.contains(inserted[0]));
+    	Assert.assertTrue(found.contains(inserted[1]));
+    	Assert.assertTrue(found.contains(inserted[2]));
     }
     
     @Test
