@@ -32,6 +32,7 @@ public class EmployeeDao {
 		this.transactionTemplate = new TransactionTemplate( transactionManager );
 	}
 	
+	
 	// SQL-запросы
 	
 	private static String insertSql;
@@ -74,14 +75,7 @@ public class EmployeeDao {
 	 */
 	public Employee findByEmpno(int empno) {
 		try {
-			return new JdbcTemplate(dataSource).queryForObject(findByEmpnoSql, new RowMapper<Employee>(){
-				public Employee mapRow( ResultSet rs, int i ) throws SQLException {
-					return new Employee(
-							rs.getInt("empno"),
-							rs.getString("ename"),
-							rs.getString("job_title"));
-				}
-			}, empno);
+			return new JdbcTemplate(dataSource).queryForObject(findByEmpnoSql, new EmployeeMapper(), empno);
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}
@@ -93,7 +87,7 @@ public class EmployeeDao {
 	}
 	
 	
-	// операции, реализованные по аналогии с проектом DbExample
+	// Операции, реализованные по аналогии с проектом DbExample
 	
 	public void handleAll( RowCallbackHandler callback ) {
 		new JdbcTemplate(dataSource).query("SELECT * FROM Employee", callback );
@@ -126,5 +120,17 @@ public class EmployeeDao {
 				jdbc.update( sql, empno+1, ename, jobTitle, empno);
 			}
 		});
+	}
+	
+	
+	// вспомогательные классы и методы
+	
+	private static class EmployeeMapper implements RowMapper<Employee> {
+		public Employee mapRow( ResultSet rs, int i ) throws SQLException {
+			return new Employee(
+					rs.getInt("empno"),
+					rs.getString("ename"),
+					rs.getString("job_title"));
+		}
 	}
 }
