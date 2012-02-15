@@ -3,6 +3,7 @@ package name.earshinov.SpringJdbcExample;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.TimeZone;
 
 import junit.framework.Assert;
@@ -24,6 +25,7 @@ public class EmployeeDaoTest {
  
     private static final int FIRST_SAMPLE_EMPNO = 32096;
     private static final int SECOND_SAMPLE_EMPNO = 32097;
+    private static final String SAMPLE_JOB = "Accountant";
     
     private Employee getTestEmployee() {
         return getTestEmployee(FIRST_SAMPLE_EMPNO);
@@ -31,7 +33,7 @@ public class EmployeeDaoTest {
     
     private Employee getTestEmployee(int empno) {
     	Date hireDate = getDate(2012, 1, 1);
-        return new Employee(empno, "John Smith", "Accoutant", hireDate);
+        return new Employee(empno, "John Smith", SAMPLE_JOB, hireDate);
     }
     
     /** Получить экземпляр Date, установленный на заданный день */
@@ -85,5 +87,60 @@ public class EmployeeDaoTest {
         Employee returnedEmployee = employeeDao.findByEmpno(insertedEmployee.getEmpno());
         Assert.assertEquals(insertedEmployee, returnedEmployee);
     }
+    
+    // тестирование поиска по критериям
+    
+    @Test
+    public void test_criteria_search_matches_everything_by_default() throws Exception {
+    	Employee e1 = new Employee(1, "John Smith", "Accountant", getDate(2011, 11, 2));
+    	Employee e2 = new Employee(2, "John Doe", "Chief accountant", getDate(2005, 2, 2));
+    	Employee e3 = new Employee(3, "Alice Schwarzer", "Technical director", getDate(2007, 6, 2));
+    	employeeDao.insert(e1);
+    	employeeDao.insert(e2);
+    	employeeDao.insert(e3);
+    	
+    	EmployeeSearchCriteria criteria = new EmployeeSearchCriteria();
+    	List<Employee> employees = employeeDao.findByCriteria(criteria);
+    	Assert.assertTrue(employees.contains(e1));
+    	Assert.assertTrue(employees.contains(e2));
+    	Assert.assertTrue(employees.contains(e3));
+    }
+    
+    @Test
+    public void test_criteria_search_correctly_matches_by_name() throws Exception {
+    	Employee e1 = new Employee(1, "John Smith", "Accountant", getDate(2011, 11, 2));
+    	Employee e2 = new Employee(2, "John Doe", "Chief accountant", getDate(2005, 2, 2));
+    	Employee e3 = new Employee(3, "Alice Schwarzer", "Technical director", getDate(2007, 6, 2));
+    	employeeDao.insert(e1);
+    	employeeDao.insert(e2);
+    	employeeDao.insert(e3);
+    	
+    	EmployeeSearchCriteria criteria = new EmployeeSearchCriteria();
+    	criteria.setNamePattern("John*");
+    	List<Employee> employees = employeeDao.findByCriteria(criteria);
+    	
+    	Assert.assertTrue(employees.contains(e1));
+    	Assert.assertTrue(employees.contains(e2));
+    	Assert.assertFalse(employees.contains(e3));
+    }
+    
+    @Test
+    public void test_criteria_search_handles_special_chars_in_pattern() throws Exception {
+    	Employee e1 = new Employee(1, "%_#", SAMPLE_JOB, null);
+    	employeeDao.insert(e1);
+    	Employee e2 = new Employee(2, "a_#", SAMPLE_JOB, null);
+    	employeeDao.insert(e2);
+    	Employee e3 = new Employee(3, "%b#", SAMPLE_JOB, null);
+    	employeeDao.insert(e3);
+    	
+    	EmployeeSearchCriteria criteria = new EmployeeSearchCriteria();
+    	criteria.setNamePattern("%_#");
+    	List<Employee> employees = employeeDao.findByCriteria(criteria);
+    	
+    	Assert.assertTrue(employees.contains(e1));
+    	Assert.assertFalse(employees.contains(e2));
+    	Assert.assertFalse(employees.contains(e3));
+    }
+
 
 }

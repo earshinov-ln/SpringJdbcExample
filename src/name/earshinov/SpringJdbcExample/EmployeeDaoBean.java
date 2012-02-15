@@ -104,6 +104,23 @@ public class EmployeeDaoBean implements EmployeeDao {
 		NamedParameterJdbcTemplate jdbc = new NamedParameterJdbcTemplate(dataSource);
 		jdbc.update(deleteByEmpnoSql, Collections.singletonMap("empno", empno));
 	}
+
+
+	@Override
+	public List<Employee> findByCriteria(EmployeeSearchCriteria criteria) {
+		NamedParameterJdbcTemplate jdbc = new NamedParameterJdbcTemplate(dataSource);
+		
+		String sql = "SELECT * FROM Employee WHERE 1=1";
+		Map<String, Object> params = new HashMap<String, Object>();
+		
+		String namePattern = criteria.getNamePattern();
+		if (namePattern != null) {
+			sql += " AND ename LIKE :ename ESCAPE '#'";
+			params.put("ename", getSqlStringPatternFromHumanStringPattern(namePattern));
+		}
+		
+		return jdbc.query(sql, params, new EmployeeMapper());
+	}
 	
 	
 	// Операции, реализованные по аналогии с проектом DbExample
@@ -165,5 +182,25 @@ public class EmployeeDaoBean implements EmployeeDao {
 					rs.getString("job_title"),
 					rs.getDate("hire_date", new GregorianCalendar(TimeZone.getTimeZone("UTC"))));
 		}
+	}
+	
+	/**
+	 * Получить шаблон в синтаксисе СУБД Apache Derby для использования внутри LIKE "...",
+	 * сопоставляющий строку по переданному шаблону @c pattern, заданному пользоватем.
+	 * 
+	 * В пользовательском шаблоне поддерживаются специальные символы * и ?
+	 * (произвольное количество символов и один символ соответственно).
+	 * 
+	 * При создании шаблона для LIKE используется символ экранирования '#'
+	 */
+	private String getSqlStringPatternFromHumanStringPattern(String pattern) {
+		// экранирование специальных символов SQL
+		pattern = pattern.replace("#", "##");
+		pattern = pattern.replace("%", "#%");
+		pattern = pattern.replace("_", "#_");
+		// замена пользовательских специальных символов специальными символами SQL
+		pattern = pattern.replace("*", "%");
+		pattern = pattern.replace("?", "_");
+		return pattern;
 	}
 }

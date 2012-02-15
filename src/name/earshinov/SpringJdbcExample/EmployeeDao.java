@@ -29,4 +29,7 @@ public interface EmployeeDao {
 
 	/** Добавить в базу указанную запись и дубликат (такого же сотрудника с empno на единицу больше) */
 	public abstract void insertWithDuplicate(Employee e);
+
+	/** Получить список работников, удовлетворяющих критериям поиска */
+	public abstract List<Employee> findByCriteria(EmployeeSearchCriteria criteria);
 }
