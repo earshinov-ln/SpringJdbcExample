@@ -4,7 +4,14 @@ import java.util.Date;
 
 public class EmployeeSearchCriteria {
 
+	/**
+	 * Шаблон имени сотрудника
+	 * 
+	 * Поддерживаются специальные символы "*" и "?".
+	 * Поиск производится с учётом регистра.
+	 */
 	public String namePattern;
+	
 	public Date hireDateFromInclusive;
 	public Date hireDateToInclusive;
 	

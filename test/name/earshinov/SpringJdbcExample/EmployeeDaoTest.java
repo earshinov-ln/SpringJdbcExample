@@ -26,14 +26,14 @@ public class EmployeeDaoTest {
     private static final int FIRST_SAMPLE_EMPNO = 32096;
     private static final int SECOND_SAMPLE_EMPNO = 32097;
     private static final String SAMPLE_JOB = "Accountant";
+    private static final Date SAMPLE_HIRE_DATE = getDate(2012, 1, 1);
     
     private Employee getTestEmployee() {
         return getTestEmployee(FIRST_SAMPLE_EMPNO);
     }
     
     private Employee getTestEmployee(int empno) {
-    	Date hireDate = getDate(2012, 1, 1);
-        return new Employee(empno, "John Smith", SAMPLE_JOB, hireDate);
+        return new Employee(empno, "John Smith", SAMPLE_JOB, SAMPLE_HIRE_DATE);
     }
     
     /** Получить экземпляр Date, установленный на заданный день */
@@ -169,6 +169,47 @@ public class EmployeeDaoTest {
     	Assert.assertFalse(employees.contains(e2));
     	Assert.assertFalse(employees.contains(e3));
     }
-
+    
+    @Test
+    public void test_criteria_search_supports_star_wildcard() throws Exception {
+    	Employee e = new Employee(1, "ab", SAMPLE_JOB, SAMPLE_HIRE_DATE);
+    	employeeDao.insert(e);
+    	
+    	EmployeeSearchCriteria criteria = new EmployeeSearchCriteria();
+    	criteria.setNamePattern("*");
+		List<Employee> found = employeeDao.findByCriteria(criteria );
+		
+		Assert.assertTrue(found.contains(e));
+    }
+    
+    @Test
+    public void test_criteria_search_supports_quotation_mark_wildcard() throws Exception {
+    	Employee e1 = new Employee(1, "a", SAMPLE_JOB, SAMPLE_HIRE_DATE);
+    	Employee e2 = new Employee(2, "ab", SAMPLE_JOB, SAMPLE_HIRE_DATE);
+    	employeeDao.insert(e1);
+    	employeeDao.insert(e2);
+    	
+    	EmployeeSearchCriteria criteria = new EmployeeSearchCriteria();
+    	criteria.setNamePattern("?");
+		List<Employee> found = employeeDao.findByCriteria(criteria );
+		
+		Assert.assertTrue(found.contains(e1));
+		Assert.assertFalse(found.contains(e2));
+    }
+    
+    @Test
+    public void test_criteria_search_pattern_is_case_sensitive() throws Exception {
+    	Employee e1 = new Employee(1, "a", SAMPLE_JOB, SAMPLE_HIRE_DATE);
+    	Employee e2 = new Employee(2, "A", SAMPLE_JOB, SAMPLE_HIRE_DATE);
+    	employeeDao.insert(e1);
+    	employeeDao.insert(e2);
+    	
+    	EmployeeSearchCriteria criteria = new EmployeeSearchCriteria();
+    	criteria.setNamePattern("a");
+		List<Employee> found = employeeDao.findByCriteria(criteria );
+		
+		Assert.assertTrue(found.contains(e1));
+		Assert.assertFalse(found.contains(e2));
+    }
 
 }
