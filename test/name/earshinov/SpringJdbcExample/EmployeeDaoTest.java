@@ -1,5 +1,10 @@
 package name.earshinov.SpringJdbcExample;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
+
 import junit.framework.Assert;
 
 import org.junit.Test;
@@ -25,7 +30,17 @@ public class EmployeeDaoTest {
     }
     
     private Employee getTestEmployee(int empno) {
-        return new Employee(empno, "John Smith", "Accoutant");
+    	Date hireDate = getDate(2012, 1, 1);
+        return new Employee(empno, "John Smith", "Accoutant", hireDate);
+    }
+    
+    /** Получить экземпляр Date, установленный на заданный день */
+    private static Date getDate(int year, int month, int day)
+    {
+    	Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+    	cal.setTimeInMillis(0L); // сбрасываем часы, минуты, секунды
+    	cal.set(year, month, day);
+    	return cal.getTime();
     }
     
  
@@ -34,6 +49,8 @@ public class EmployeeDaoTest {
         Employee insertedEmployee = getTestEmployee();
         employeeDao.insert( insertedEmployee );
         Employee returnedEmployee = employeeDao.findByEmpno( insertedEmployee.getEmpno() );
+        
+        Assert.assertEquals(insertedEmployee.getHireDate(), returnedEmployee.getHireDate()); // FIXME: удалить!!
         Assert.assertEquals(insertedEmployee, returnedEmployee);
     }
     

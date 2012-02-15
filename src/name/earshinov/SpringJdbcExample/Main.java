@@ -2,9 +2,14 @@ package name.earshinov.SpringJdbcExample;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -19,7 +24,7 @@ public class Main {
 		"\n" +
 		"    list-all - показать все записи из базы\n" +
 		"    list-by-empno [EMPNO [...]] - показать записи с заданными EMPNO\n" +
-		"    insert-with-duplicate EMPNO ENAME JOB_TITLE\n" +
+		"    insert-with-duplicate EMPNO ENAME JOB_TITLE HIRE_DATE\n" +
 		"\n" +
 		"Команда insert-with-duplicate добавляет в базу заданного Employee, а также\n" +
 		"запись-дубликат с EMPNO, увеличенным на 1, ссылающуюся на первую запись\n" +
@@ -96,7 +101,7 @@ public class Main {
 	private static void executeInsertWithDuplicate(List<String> commandArgs)
 		throws CommandException {
 
-		if (commandArgs.size() != 3)
+		if (commandArgs.size() != 4)
 			throw new CommandException("Некорректное число аргументов");
 
 		// считываем из аргументов значения для вставки
@@ -111,7 +116,15 @@ public class Main {
 		String ename = commandArgs.get(1);
 		String jobTitle = commandArgs.get(2);
 		
-		getEmployeeDao().insertWithDuplicate( new Employee(empno, ename, jobTitle) );
+		String hireDateString = commandArgs.get(3);
+		Date hireDate;
+		try {
+			hireDate = DateFormat.getDateInstance().parse(hireDateString);
+		} catch (ParseException e) {
+			throw new CommandException("Неизвестный формат даты: \"" + hireDateString + "\"");
+		}
+		
+		getEmployeeDao().insertWithDuplicate( new Employee(empno, ename, jobTitle, hireDate) );
 	}
 	
 	
@@ -134,7 +147,8 @@ public class Main {
 		int empno = rs.getInt("EMPNO");
 		String ename = rs.getString("ENAME");
 		String jobTitle = rs.getString("JOB_TITLE");
-		System.out.println("" + empno + ", " + ename + ", " + jobTitle);
+		Date hireDate = rs.getDate("HIRE_DATE", new GregorianCalendar(TimeZone.getTimeZone("UTC")));
+		System.out.println("" + empno + ", " + ename + ", " + jobTitle + ", " + hireDate);
 	}
 
 }

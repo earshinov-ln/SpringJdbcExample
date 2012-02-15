@@ -15,14 +15,14 @@
         <!-- SQL-запросы  -->
         <property name="insertSql">
             <value><![CDATA[
-                INSERT INTO Employee (empno, ename, job_title)
-                VALUES (:empno, :name, :jobTitle)
+                INSERT INTO Employee (empno, ename, job_title, hire_date)
+                VALUES (:empno, :name, :jobTitle, :hireDate)
             ]]></value>
         </property>
         <property name="updateSql">
             <value><![CDATA[
                 UPDATE Employee 
-                SET ename = :name, job_title = :jobTitle
+                SET ename = :name, job_title = :jobTitle, hire_date = :hireDate
                 WHERE empno = :empno
             ]]></value>
         </property>

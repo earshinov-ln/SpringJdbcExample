@@ -3,9 +3,12 @@ package name.earshinov.SpringJdbcExample;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.sql.DataSource;
 
@@ -68,6 +71,7 @@ public class EmployeeDaoBean implements EmployeeDao {
 		params.put("empno", e.getEmpno());
 		params.put("name", e.getName());
 		params.put("jobTitle", e.getJobTitle());
+		params.put("hireDate", e.getHireDate());
 		jdbc.update(insertSql, params);
 	}
 	
@@ -79,6 +83,7 @@ public class EmployeeDaoBean implements EmployeeDao {
 		params.put("empno", e.getEmpno());
 		params.put("name", e.getName());
 		params.put("jobTitle", e.getJobTitle());
+		params.put("hireDate", e.getHireDate());
 		jdbc.update(updateSql, params);
 	}
 	
@@ -124,6 +129,7 @@ public class EmployeeDaoBean implements EmployeeDao {
 		final int empno = e.getEmpno();
 		final String ename = e.getName();
 		final String jobTitle = e.getJobTitle();
+		final Date hireDate = e.getHireDate();
 		
 		// Рецепт подсмотрен по ссылке <http://stackoverflow.com/questions/1023907/easy-transactions-using-spring-jdbc>.
 		// Альтернатива - использовать аннотацию @Transactional или что-то типа того
@@ -133,17 +139,17 @@ public class EmployeeDaoBean implements EmployeeDao {
 				JdbcTemplate jdbc = new JdbcTemplate(dataSource);
 				
 				String sql =
-					"INSERT INTO Employee (EMPNO, ENAME, JOB_TITLE) " +
-					"VALUES (?, ?, ?)";
-				jdbc.update(sql, empno, ename, jobTitle);
+					"INSERT INTO Employee (EMPNO, ENAME, JOB_TITLE, HIRE_DATE) " +
+					"VALUES (?, ?, ?, ?)";
+				jdbc.update(sql, empno, ename, jobTitle, hireDate);
 				
 				// проверка отката транзации:
 				//int unused_ret = 1 / 0;
 
 				sql =
-					"INSERT INTO Employee (EMPNO, ENAME, JOB_TITLE, DUPLICATE_EMPNO) " +
-					"VALUES (?, ?, ?, ?)";
-				jdbc.update( sql, empno+1, ename, jobTitle, empno);
+					"INSERT INTO Employee (EMPNO, ENAME, JOB_TITLE, HIRE_DATE, DUPLICATE_EMPNO) " +
+					"VALUES (?, ?, ?, ?, ?)";
+				jdbc.update( sql, empno+1, ename, jobTitle, hireDate, empno);
 			}
 		});
 	}
@@ -156,7 +162,8 @@ public class EmployeeDaoBean implements EmployeeDao {
 			return new Employee(
 					rs.getInt("empno"),
 					rs.getString("ename"),
-					rs.getString("job_title"));
+					rs.getString("job_title"),
+					rs.getDate("hire_date", new GregorianCalendar(TimeZone.getTimeZone("UTC"))));
 		}
 	}
 }
