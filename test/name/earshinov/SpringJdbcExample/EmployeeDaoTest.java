@@ -13,13 +13,25 @@ import org.springframework.transaction.annotation.Transactional;
 @ContextConfiguration(locations="/spring-context.xml")
 @Transactional
 public class EmployeeDaoTest {
- 
+    
     @Autowired
     private EmployeeDao employeeDao;
  
+    private static final int FIRST_SAMPLE_EMPNO = 32096;
+    private static final int SECOND_SAMPLE_EMPNO = 32097;
+    
+    private Employee getTestEmployee() {
+        return getTestEmployee(FIRST_SAMPLE_EMPNO);
+    }
+    
+    private Employee getTestEmployee(int empno) {
+        return new Employee(empno, "John Smith", "Accoutant");
+    }
+    
+ 
     @Test
     public void test_create_and_read() {
-    	Employee insertedEmployee = new Employee(32096, "John Smith", "Accoutant");
+        Employee insertedEmployee = getTestEmployee();
         employeeDao.insert( insertedEmployee );
         Employee returnedEmployee = employeeDao.findByEmpno( insertedEmployee.getEmpno() );
         Assert.assertEquals(insertedEmployee, returnedEmployee);
@@ -27,30 +39,30 @@ public class EmployeeDaoTest {
     
     @Test
     public void test_delete() {
-    	
-    	Employee e1 = new Employee(32096, "John Smith", "Accountant");
-    	employeeDao.insert(e1);
-    	
-    	Employee e2 = new Employee(32097, "John Doe", "Senior Java Programmer");
-    	employeeDao.insert(e2);
-    	
-    	employeeDao.deleteByEmpno( e1.getEmpno() );
-    	Assert.assertNull(employeeDao.findByEmpno(e1.getEmpno()));
-    	
-    	// запись Employee2 не должна никуда деться
-    	Assert.assertEquals(e2, employeeDao.findByEmpno(e2.getEmpno()));
+        
+        Employee e1 = getTestEmployee(FIRST_SAMPLE_EMPNO);
+        employeeDao.insert(e1);
+        
+        Employee e2 = getTestEmployee(SECOND_SAMPLE_EMPNO);
+        employeeDao.insert(e2);
+        
+        employeeDao.deleteByEmpno( e1.getEmpno() );
+        Assert.assertNull(employeeDao.findByEmpno(e1.getEmpno()));
+        
+        // запись Employee2 не должна никуда деться
+        Assert.assertEquals(e2, employeeDao.findByEmpno(e2.getEmpno()));
     }
     
     @Test
     public void test_update() {
-    	Employee insertedEmployee = new Employee(32096, "John Smith", "Accountant");
-    	employeeDao.insert(insertedEmployee);
-    	
-    	insertedEmployee.setJobTitle("Chief accountant");
-    	employeeDao.update(insertedEmployee);
-    	
-    	Employee returnedEmployee = employeeDao.findByEmpno(insertedEmployee.getEmpno());
-    	Assert.assertEquals(insertedEmployee, returnedEmployee);
+        Employee insertedEmployee = getTestEmployee();
+        employeeDao.insert(insertedEmployee);
+        
+        insertedEmployee.setJobTitle("Chief " + insertedEmployee.getJobTitle());
+        employeeDao.update(insertedEmployee);
+        
+        Employee returnedEmployee = employeeDao.findByEmpno(insertedEmployee.getEmpno());
+        Assert.assertEquals(insertedEmployee, returnedEmployee);
     }
 
 }
