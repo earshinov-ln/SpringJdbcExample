@@ -26,6 +26,10 @@ public class Employee {
 	}
 		
 	
+	// FIXME: equals здесь должен сравнивать не все поля, а identity.
+	// В качестве identity выступает первичный ключ в БД (empno).
+	// Для сравнения объектов Employee в модульных тестах надо предусмотреть
+	// "custom assertion" - метод, выполняющий отдельно сравнение всех полей.
 	@Override
 	public boolean equals(Object obj) {
 		if ( ! (obj instanceof Employee))
