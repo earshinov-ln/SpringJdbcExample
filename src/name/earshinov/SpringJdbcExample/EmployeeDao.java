@@ -21,6 +21,11 @@ public interface EmployeeDao {
 	/** Удалить из базы запись с указанным идентификатором */
 	public abstract void deleteByEmpno(int empno);
 
+	/** Получить список работников, удовлетворяющих критериям поиска */
+	public abstract List<Employee> findByCriteria(EmployeeSearchCriteria criteria);
+	
+	// Операции, реализованные по аналогии с проектом DbExample
+
 	/** Выполнить переданный обработчик для каждого работника в базе */
 	public abstract void handleAll(RowCallbackHandler callback);
 
@@ -29,7 +34,4 @@ public interface EmployeeDao {
 
 	/** Добавить в базу указанную запись и дубликат (такого же сотрудника с empno на единицу больше) */
 	public abstract void insertWithDuplicate(Employee e);
-
-	/** Получить список работников, удовлетворяющих критериям поиска */
-	public abstract List<Employee> findByCriteria(EmployeeSearchCriteria criteria);
 }
