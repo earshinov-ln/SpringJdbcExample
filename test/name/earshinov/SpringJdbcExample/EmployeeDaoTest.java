@@ -40,9 +40,8 @@ public class EmployeeDaoTest {
     public void test_create_and_read() throws Exception {
         Employee insertedEmployee = getTestEmployee();
         employeeDao.insert( insertedEmployee );
-        Employee returnedEmployee = employeeDao.findByEmpno( insertedEmployee.getEmpno() );
         
-        Assert.assertEquals(insertedEmployee.getHireDate(), returnedEmployee.getHireDate()); // FIXME: удалить!!
+        Employee returnedEmployee = employeeDao.findByEmpno( insertedEmployee.getEmpno() );
         Assert.assertEquals(insertedEmployee, returnedEmployee);
     }
     
