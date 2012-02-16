@@ -45,6 +45,20 @@ public class EmployeeDaoTest {
         Assert.assertEquals(insertedEmployee, returnedEmployee);
     }
     
+    @Test
+    public void test_hire_date_is_stored_without_time() throws Exception {
+    	 Employee insertedEmployee = getTestEmployee();
+    	 
+    	 // добавляем произвольное время
+    	 long time = insertedEmployee.getHireDate().getTime();
+    	 time += ( 12*60*60 + 45*60 + 30 ) * 1000;
+    	 insertedEmployee.setHireDate(new Date(time));
+    	 
+         employeeDao.insert( insertedEmployee );
+         Employee returnedEmployee = employeeDao.findByEmpno( insertedEmployee.getEmpno() );
+         Assert.assertEquals(insertedEmployee, returnedEmployee);
+    }
+    
     @Test(expected=EmployeeDaoException.class)
     public void test_delete() throws Exception {
         Employee e = getTestEmployee();
