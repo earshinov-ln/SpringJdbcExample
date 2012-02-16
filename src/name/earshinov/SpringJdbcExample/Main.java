@@ -7,9 +7,9 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.TimeZone;
+
+import name.earshinov.Utils.DateUtils;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -147,7 +147,7 @@ public class Main {
 		int empno = rs.getInt("EMPNO");
 		String ename = rs.getString("ENAME");
 		String jobTitle = rs.getString("JOB_TITLE");
-		Date hireDate = rs.getDate("HIRE_DATE", new GregorianCalendar(TimeZone.getTimeZone("UTC")));
+		Date hireDate = DateUtils.getDateFromDerbySqlDate(rs, "HIRE_DATE");
 		System.out.println("" + empno + ", " + ename + ", " + jobTitle + ", " + hireDate);
 	}
 

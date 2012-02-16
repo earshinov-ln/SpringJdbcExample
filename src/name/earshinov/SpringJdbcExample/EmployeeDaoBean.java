@@ -4,13 +4,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 import javax.sql.DataSource;
+
+import name.earshinov.Utils.DateUtils;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -188,7 +188,7 @@ public class EmployeeDaoBean implements EmployeeDao {
 					rs.getInt("empno"),
 					rs.getString("ename"),
 					rs.getString("job_title"),
-					rs.getDate("hire_date", new GregorianCalendar(TimeZone.getTimeZone("UTC"))));
+					DateUtils.getDateFromDerbySqlDate(rs, "hire_date"));
 		}
 	}
 	

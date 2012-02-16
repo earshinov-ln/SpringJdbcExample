@@ -1,12 +1,10 @@
 package name.earshinov.SpringJdbcExample;
 
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.TimeZone;
 
 import junit.framework.Assert;
+import name.earshinov.Utils.DateUtils;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,7 +25,7 @@ public class EmployeeDaoTest {
     private static final int SECOND_SAMPLE_EMPNO = 32097;
     private static final int THIRD_SAMPLE_EMPNO = 32098;
     private static final String SAMPLE_JOB = "Accountant";
-    private static final Date SAMPLE_HIRE_DATE = getDate(2012, 1, 1);
+    private static final Date SAMPLE_HIRE_DATE = DateUtils.getDate(2012, 1, 1);
     
     private Employee getTestEmployee() {
         return getTestEmployee(FIRST_SAMPLE_EMPNO);
@@ -35,15 +33,6 @@ public class EmployeeDaoTest {
     
     private Employee getTestEmployee(int empno) {
         return new Employee(empno, "John Smith", SAMPLE_JOB, SAMPLE_HIRE_DATE);
-    }
-    
-    /** Получить экземпляр Date, установленный на заданный день */
-    private static Date getDate(int year, int month, int day)
-    {
-    	Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
-    	cal.setTimeInMillis(0L); // сбрасываем часы, минуты, секунды
-    	cal.set(year, month, day);
-    	return cal.getTime();
     }
     
  
@@ -93,9 +82,9 @@ public class EmployeeDaoTest {
     
     private Employee[] prepareEmployeesForCriteriaSearch() {
     	Employee[] employees = new Employee[] {
-			new Employee(1, "John Smith", "Accountant", getDate(2011, 11, 2)),
-	    	new Employee(2, "John Doe", "Chief accountant", getDate(2005, 2, 2)),
-	    	new Employee(3, "Alice Schwarzer", "Technical director", getDate(2007, 6, 2)),	
+			new Employee(1, "John Smith", "Accountant", DateUtils.getDate(2011, 11, 2)),
+	    	new Employee(2, "John Doe", "Chief accountant", DateUtils.getDate(2005, 2, 2)),
+	    	new Employee(3, "Alice Schwarzer", "Technical director", DateUtils.getDate(2007, 6, 2)),	
     	};
     	for (Employee e : employees)
     		employeeDao.insert(e);
@@ -132,7 +121,7 @@ public class EmployeeDaoTest {
     	Employee[] inserted = prepareEmployeesForCriteriaSearch();
     	
     	EmployeeSearchCriteria criteria = new EmployeeSearchCriteria();
-    	criteria.setHireDateFromInclusive(getDate(2007, 6, 2));
+    	criteria.setHireDateFromInclusive(DateUtils.getDate(2007, 6, 2));
     	List<Employee> found = employeeDao.findByCriteria(criteria);
     	
     	Assert.assertTrue(found.contains(inserted[0]));
@@ -145,7 +134,7 @@ public class EmployeeDaoTest {
     	Employee[] inserted = prepareEmployeesForCriteriaSearch();
     	
     	EmployeeSearchCriteria criteria = new EmployeeSearchCriteria();
-    	criteria.setHireDateToInclusive(getDate(2007, 6, 2));
+    	criteria.setHireDateToInclusive(DateUtils.getDate(2007, 6, 2));
     	List<Employee> found = employeeDao.findByCriteria(criteria);
     	
     	Assert.assertFalse(found.contains(inserted[0]));

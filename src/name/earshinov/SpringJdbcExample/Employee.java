@@ -1,9 +1,8 @@
 package name.earshinov.SpringJdbcExample;
 
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
+
+import name.earshinov.Utils.DateUtils;
 
 public class Employee {
 
@@ -82,22 +81,6 @@ public class Employee {
 	 * Из переданного экземпляра Date берётся только дата.
 	 */
 	public void setHireDate(Date hireDate) {
-		this.hireDate = hireDate == null ? null : getDateWithoutTime(hireDate);
-	}
-	
-	/** Получить копию переданного экземпляра Date с временем, установленным в 00:00 по UTC */
-	private Date getDateWithoutTime(Date date) {
-		if (date == null)
-			throw new IllegalArgumentException();
-		
-		// <http://stackoverflow.com/questions/5050170/java-getting-date-without-time>
-		Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
-		cal.setTime(date);
-		int year = cal.get(Calendar.YEAR);
-		int month = cal.get(Calendar.MONTH);
-		int day = cal.get(Calendar.DAY_OF_MONTH);
-		cal.setTimeInMillis(0L); // сбрасываем часы, минуты, секунды
-		cal.set(year, month, day);
-    	return cal.getTime();
+		this.hireDate = hireDate == null ? null : DateUtils.stripTime(hireDate);
 	}
 }
