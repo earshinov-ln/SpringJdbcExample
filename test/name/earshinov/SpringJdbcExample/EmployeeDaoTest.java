@@ -25,6 +25,7 @@ public class EmployeeDaoTest {
  
     private static final int FIRST_SAMPLE_EMPNO = 32096;
     private static final int SECOND_SAMPLE_EMPNO = 32097;
+    private static final int THIRD_SAMPLE_EMPNO = 32098;
     private static final String SAMPLE_JOB = "Accountant";
     private static final Date SAMPLE_HIRE_DATE = getDate(2012, 1, 1);
     
@@ -154,7 +155,7 @@ public class EmployeeDaoTest {
     
     @Test
     public void test_criteria_search_works_with_several_parameters() throws Exception {
-    	Employee e = new Employee(1, "John Smith", SAMPLE_JOB, SAMPLE_HIRE_DATE);
+    	Employee e = new Employee(FIRST_SAMPLE_EMPNO, "John Smith", SAMPLE_JOB, SAMPLE_HIRE_DATE);
     	employeeDao.insert(e);
     	
     	EmployeeSearchCriteria criteria = new EmployeeSearchCriteria();
@@ -168,11 +169,11 @@ public class EmployeeDaoTest {
     
     @Test
     public void test_criteria_search_handles_special_chars_in_pattern() throws Exception {
-    	Employee e1 = new Employee(1, "%_#", SAMPLE_JOB, null);
+    	Employee e1 = new Employee(FIRST_SAMPLE_EMPNO, "%_#", SAMPLE_JOB, null);
     	employeeDao.insert(e1);
-    	Employee e2 = new Employee(2, "a_#", SAMPLE_JOB, null);
+    	Employee e2 = new Employee(SECOND_SAMPLE_EMPNO, "a_#", SAMPLE_JOB, null);
     	employeeDao.insert(e2);
-    	Employee e3 = new Employee(3, "%b#", SAMPLE_JOB, null);
+    	Employee e3 = new Employee(THIRD_SAMPLE_EMPNO, "%b#", SAMPLE_JOB, null);
     	employeeDao.insert(e3);
     	
     	EmployeeSearchCriteria criteria = new EmployeeSearchCriteria();
@@ -186,7 +187,7 @@ public class EmployeeDaoTest {
     
     @Test
     public void test_criteria_search_supports_star_wildcard() throws Exception {
-    	Employee e = new Employee(1, "ab", SAMPLE_JOB, SAMPLE_HIRE_DATE);
+    	Employee e = new Employee(FIRST_SAMPLE_EMPNO, "ab", SAMPLE_JOB, SAMPLE_HIRE_DATE);
     	employeeDao.insert(e);
     	
     	EmployeeSearchCriteria criteria = new EmployeeSearchCriteria();
@@ -198,8 +199,8 @@ public class EmployeeDaoTest {
     
     @Test
     public void test_criteria_search_supports_quotation_mark_wildcard() throws Exception {
-    	Employee e1 = new Employee(1, "a", SAMPLE_JOB, SAMPLE_HIRE_DATE);
-    	Employee e2 = new Employee(2, "ab", SAMPLE_JOB, SAMPLE_HIRE_DATE);
+    	Employee e1 = new Employee(FIRST_SAMPLE_EMPNO, "a", SAMPLE_JOB, SAMPLE_HIRE_DATE);
+    	Employee e2 = new Employee(SECOND_SAMPLE_EMPNO, "ab", SAMPLE_JOB, SAMPLE_HIRE_DATE);
     	employeeDao.insert(e1);
     	employeeDao.insert(e2);
     	
@@ -213,8 +214,8 @@ public class EmployeeDaoTest {
     
     @Test
     public void test_criteria_search_pattern_is_case_sensitive() throws Exception {
-    	Employee e1 = new Employee(1, "a", SAMPLE_JOB, SAMPLE_HIRE_DATE);
-    	Employee e2 = new Employee(2, "A", SAMPLE_JOB, SAMPLE_HIRE_DATE);
+    	Employee e1 = new Employee(FIRST_SAMPLE_EMPNO, "a", SAMPLE_JOB, SAMPLE_HIRE_DATE);
+    	Employee e2 = new Employee(SECOND_SAMPLE_EMPNO, "A", SAMPLE_JOB, SAMPLE_HIRE_DATE);
     	employeeDao.insert(e1);
     	employeeDao.insert(e2);
     	
