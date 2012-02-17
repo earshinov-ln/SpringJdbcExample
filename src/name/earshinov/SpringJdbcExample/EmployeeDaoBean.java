@@ -117,7 +117,13 @@ public class EmployeeDaoBean implements EmployeeDao {
 	}
 
 	@Override
-	public void insertWithDuplicate(final int empno, final String ename, final String jobTitle) {
+	public void insertWithDuplicate(Employee e) {
+		// Правильнее было бы использовать ниже существующий метод insert(),
+		// передавая туда прямо employee, но это "унаследованный" код и
+		// трогать его не хочется.
+		final int empno = e.getEmpno();
+		final String ename = e.getName();
+		final String jobTitle = e.getJobTitle();
 		
 		// <http://stackoverflow.com/questions/1023907/easy-transactions-using-spring-jdbc>
 		transactionTemplate.execute(new TransactionCallbackWithoutResult(){

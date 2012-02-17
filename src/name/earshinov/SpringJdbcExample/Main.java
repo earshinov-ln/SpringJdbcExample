@@ -111,7 +111,7 @@ public class Main {
 		String ename = commandArgs.get(1);
 		String jobTitle = commandArgs.get(2);
 		
-		getEmployeeDao().insertWithDuplicate( empno, ename, jobTitle );
+		getEmployeeDao().insertWithDuplicate( new Employee(empno, ename, jobTitle) );
 	}
 	
 	

@@ -27,5 +27,6 @@ public interface EmployeeDao {
 	/** Выполнить переданный обработчик для каждого работника в базе, идентификатор которого в списке @c ids */
 	public abstract void handleEmployeesByIds(List<Integer> ids, RowCallbackHandler callback);
 
-	public abstract void insertWithDuplicate(final int empno, final String ename, final String jobTitle);
+	/** Добавить в базу указанную запись и дубликат (такого же сотрудника с empno на единицу больше) */
+	public abstract void insertWithDuplicate(Employee e);
 }
