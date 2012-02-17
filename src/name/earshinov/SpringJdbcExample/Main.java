@@ -117,7 +117,7 @@ public class Main {
 	
 	private static EmployeeDao getEmployeeDao() {
 		ApplicationContext context = new ClassPathXmlApplicationContext("spring-context.xml");
-		EmployeeDao employeeDao = context.getBean(EmployeeDao.class);
+		EmployeeDao employeeDao = context.getBean(EmployeeDaoBean.class);
 		return employeeDao;
 	}
 	

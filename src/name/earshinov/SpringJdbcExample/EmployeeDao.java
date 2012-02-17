@@ -1,154 +1,32 @@
 package name.earshinov.SpringJdbcExample;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import javax.sql.DataSource;
-
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
 
-public class EmployeeDao {
-
-	// Dependency injection
-	
-	private DataSource dataSource;
-	private TransactionTemplate transactionTemplate;
-	
-	public void setDataSource(DataSource dataSource) {
-		this.dataSource = dataSource;
-	}
-	
-	public void setTransactionManager(PlatformTransactionManager transactionManager) {
-		this.transactionTemplate = new TransactionTemplate( transactionManager );
-	}
-	
-	
-	// SQL-запросы
-	
-	private static String insertSql;
-	public static void setInsertSql(String insertSql) {
-		EmployeeDao.insertSql = insertSql;
-	}
-	
-	private static String updateSql;
-	public static void setUpdateSql(String updateSql) {
-		EmployeeDao.updateSql = updateSql;
-	}
-	
-	private static String findByEmpnoSql;
-	public static void setFindByEmpnoSql(String findByEmpnoSql) {
-		EmployeeDao.findByEmpnoSql = findByEmpnoSql;
-	}
-	
-	private static String deleteByEmpnoSql;
-	public static void setDeleteByEmpnoSql(String deleteByEmpnoSql) {
-		EmployeeDao.deleteByEmpnoSql = deleteByEmpnoSql;
-	}
-	
-	
-	// CRUD operations
+public interface EmployeeDao {
 
 	/** Добавить в базу указанную запись */
-	public void insert(Employee e) {
-		NamedParameterJdbcTemplate jdbc = new NamedParameterJdbcTemplate(dataSource);
-		
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("empno", e.getEmpno());
-		params.put("name", e.getName());
-		params.put("jobTitle", e.getJobTitle());
-		jdbc.update(insertSql, params);
-	}
-	
+	public abstract void insert(Employee e);
+
 	/** Обновить в базе запись */
-	public void update(Employee e) {
-		NamedParameterJdbcTemplate jdbc = new NamedParameterJdbcTemplate(dataSource);
-		
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("empno", e.getEmpno());
-		params.put("name", e.getName());
-		params.put("jobTitle", e.getJobTitle());
-		jdbc.update(updateSql, params);
-	}
-	
+	public abstract void update(Employee e);
+
 	/**
 	 * Получить из базы запись с указанным идентификатором.
 	 * 
 	 * @return Найденная запись или @c null, если записи с указанным идентификатором нет.
 	 */
-	public Employee findByEmpno(int empno) throws EmployeeDaoException {
-		NamedParameterJdbcTemplate jdbc = new NamedParameterJdbcTemplate(dataSource);
-		try {
-			return jdbc.queryForObject(findByEmpnoSql,
-					Collections.singletonMap("empno", empno),
-					new EmployeeMapper());
-		} catch (EmptyResultDataAccessException e) {
-			throw new EmployeeDaoException("Employee with employee number " + empno + " not found", e);
-		}
-	}
-	
+	public abstract Employee findByEmpno(int empno) throws EmployeeDaoException;
+
 	/** Удалить из базы запись с указанным идентификатором */
-	public void deleteByEmpno(int empno) {
-		NamedParameterJdbcTemplate jdbc = new NamedParameterJdbcTemplate(dataSource);
-		jdbc.update(deleteByEmpnoSql, Collections.singletonMap("empno", empno));
-	}
-	
-	
-	// Операции, реализованные по аналогии с проектом DbExample
-	
-	public void handleAll( RowCallbackHandler callback ) {
-		new JdbcTemplate(dataSource).query("SELECT * FROM Employee", callback );
-	}
+	public abstract void deleteByEmpno(int empno);
 
-	public void handleEmployeesByIds(List<Integer> ids, RowCallbackHandler callback) {
-		new NamedParameterJdbcTemplate(dataSource).query(
-			"SELECT * FROM Employee WHERE empno IN ( :ids )",
-            Collections.singletonMap("ids", ids),
-            callback);
-	}
+	/** Выполнить переданный обработчик для каждого работника в базе */
+	public abstract void handleAll(RowCallbackHandler callback);
 
-	public void insertWithDuplicate(final int empno, final String ename, final String jobTitle) {
-		transactionTemplate.execute(new TransactionCallbackWithoutResult(){
-			protected void doInTransactionWithoutResult(TransactionStatus tran) {
-				
-				JdbcTemplate jdbc = new JdbcTemplate(dataSource);
-				
-				String sql =
-					"INSERT INTO Employee (EMPNO, ENAME, JOB_TITLE) " +
-					"VALUES (?, ?, ?)";
-				jdbc.update(sql, empno, ename, jobTitle);
-				
-				// проверка отката транзации:
-				//int unused_ret = 1 / 0;
+	/** Выполнить переданный обработчик для каждого работника в базе, идентификатор которого в списке @c ids */
+	public abstract void handleEmployeesByIds(List<Integer> ids, RowCallbackHandler callback);
 
-				sql =
-					"INSERT INTO Employee (EMPNO, ENAME, JOB_TITLE, DUPLICATE_EMPNO) " +
-					"VALUES (?, ?, ?, ?)";
-				jdbc.update( sql, empno+1, ename, jobTitle, empno);
-			}
-		});
-	}
-	
-	
-	// вспомогательные классы и методы
-	
-	private static class EmployeeMapper implements RowMapper<Employee> {
-		public Employee mapRow( ResultSet rs, int i ) throws SQLException {
-			return new Employee(
-					rs.getInt("empno"),
-					rs.getString("ename"),
-					rs.getString("job_title"));
-		}
-	}
+	public abstract void insertWithDuplicate(final int empno, final String ename, final String jobTitle);
 }
